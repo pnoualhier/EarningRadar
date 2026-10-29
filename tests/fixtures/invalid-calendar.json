@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "schemaVersion": 1,
+    "generatedAt": "2026-10-29T10:00:00.000Z",
+    "lastSuccessfulFetchAt": null,
+    "provider": "Alpha Vantage",
+    "status": "success",
+    "eventCount": 99,
+    "markets": ["US"],
+    "warnings": []
+  },
+  "events": [
+    {
+      "id": "DUP_ID_01",
+      "symbol": "",
+      "companyName": "Bad Company",
+      "market": "US",
+      "announcementDate": "2026-02-31",
+      "session": "invalid_session",
+      "dateStatus": "confirmed",
+      "revenueEstimate": -500,
+      "sourceName": "Unknown",
+      "fetchedAt": "invalid-date"
+    },
+    {
+      "id": "DUP_ID_01",
+      "symbol": "DUP",
+      "companyName": "Duplicate",
+      "market": "US",
+      "announcementDate": "2026-10-29",
+      "session": "before_open",
+      "dateStatus": "confirmed",
+      "sourceName": "Feed",
+      "fetchedAt": "2026-10-29T10:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "symbol": "GOOGL",
+    "name": "Alphabet Inc.",
+    "reportDate": "2026-10-29",
+    "fiscalDateEnding": "2026-09-30",
+    "estimate": "1.85",
+    "currency": "USD",
+    "session": "after_close",
+    "market": "US",
+    "statusText": "confirmed"
+  },
+  {
+    "symbol": "AIR.PA",
+    "name": "Airbus SE",
+    "reportDate": "2026-10-29",
+    "fiscalDateEnding": "2026-09-30",
+    "estimate": "1.10",
+    "currency": "EUR",
+    "session": "before_open",
+    "market": "EU",
+    "statusText": "confirmed"
+  },
+  {
+    "symbol": "AMZN",
+    "name": "Amazon.com Inc.",
+    "reportDate": "2026-10-29",
+    "fiscalDateEnding": "2026-09-30",
+    "estimate": "1.15",
+    "currency": "USD",
+    "session": "after_close",
+    "market": "US",
+    "statusText": "estimated"
+  }
+]

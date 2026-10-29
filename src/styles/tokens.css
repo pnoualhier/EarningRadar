@@ -1,0 +1,53 @@
+:root {
+  /* Surface palette: Night Navy & Refined Slate */
+  --color-brand-midnight: #0a0f1d;
+  --color-brand-navy: #0f172a;
+  --color-brand-navy-light: #1e293b;
+  --color-brand-navy-border: #334155;
+
+  /* Accent: Subtle Financial Gold */
+  --color-brand-gold: #d97706;
+  --color-brand-gold-hover: #b45309;
+  --color-brand-gold-subtle: #fef3c7;
+  --color-brand-gold-border: #fcd34d;
+
+  /* Calendar board: Warm Off-White / Ivory for contrast */
+  --color-board-bg: #f8fafc;
+  --color-board-surface: #ffffff;
+  --color-board-border: #e2e8f0;
+  --color-board-header-bg: #f1f5f9;
+
+  /* Typography */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748b;
+  --color-text-light: #f8fafc;
+  --color-text-light-muted: #94a3b8;
+
+  /* Status Colors with text and contrast */
+  --color-status-confirmed-bg: #ecfdf5;
+  --color-status-confirmed-text: #065f46;
+  --color-status-confirmed-border: #a7f3d0;
+
+  --color-status-estimated-bg: #fffbeb;
+  --color-status-estimated-text: #92400e;
+  --color-status-estimated-border: #fde68a;
+
+  --color-status-unverified-bg: #f1f5f9;
+  --color-status-unverified-text: #475569;
+  --color-status-unverified-border: #cbd5e1;
+
+  /* Market Badges */
+  --color-market-us: #2563eb;
+  --color-market-eu: #059669;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}

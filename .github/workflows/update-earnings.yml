@@ -1,0 +1,53 @@
+name: Update earnings calendar
+
+on:
+  schedule:
+    - cron: "17 5 * * 1-6"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: earnings-calendar-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run validation and unit tests
+        run: npm run test:run
+
+      - name: Fetch and update calendar
+        env:
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+        run: npm run data:update
+
+      - name: Validate updated calendar
+        run: npm run data:validate
+
+      - name: Copy calendar to public distribution folder
+        run: cp data/calendar.json public/data/calendar.json
+
+      - name: Commit and push changes if updated
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/calendar.json public/data/calendar.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore(data): automated daily earnings calendar update [skip ci]"
+          git push origin HEAD:${{ github.ref_name }} || echo "No changes or push skipped"

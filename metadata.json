@@ -1,0 +1,6 @@
+{
+  "name": "Earnings Radar",
+  "description": "Calendrier financier interactif et PWA des publications de résultats d'entreprises cotées aux États-Unis et en Europe.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

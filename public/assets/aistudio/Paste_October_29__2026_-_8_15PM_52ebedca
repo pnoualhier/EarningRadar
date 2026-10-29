@@ -1,0 +1,1253 @@
+# PROMPT CODEX — CONSTRUCTION COMPLÈTE D'EARNINGS RADAR
+
+## 0. Rôle et mission
+
+Tu agis comme un ingénieur logiciel senior, architecte frontend, spécialiste TypeScript, PWA, sécurité applicative, GitHub Actions et intégration d'API financières.
+
+Ta mission est de **construire une application réellement fonctionnelle nommée Earnings Radar**, destinée à afficher les calendriers de publication des résultats financiers des entreprises cotées aux États-Unis et en Europe.
+
+Tu dois travailler directement dans le dépôt Git courant, en inspectant son état avant toute modification.
+
+Il ne s'agit pas de générer une maquette, un prototype visuel ou un ensemble de composants statiques. Tu dois construire une application exécutable, testée, documentée et déployable.
+
+### Principes non négociables
+
+1. Aucune donnée fictive ne doit être présentée comme une donnée financière réelle.
+2. Aucune clé API ne doit être exposée dans le navigateur.
+3. Aucune date estimée ne doit être présentée comme officiellement confirmée.
+4. Aucune nouvelle génération de données invalide ne doit remplacer la dernière version valide.
+5. L'application doit rester utilisable lorsque le réseau est indisponible, avec les dernières données disponibles en cache.
+6. Les fonctionnalités non implémentées doivent être documentées explicitement.
+7. Aucun test ne doit être déclaré réussi sans avoir réellement été exécuté.
+8. Ne jamais contourner une limitation du fournisseur financier en inventant des réponses ou des événements.
+9. Ne pas ajouter de backend applicatif permanent ni de base PostgreSQL.
+10. Privilégier les solutions gratuites et les dépendances maintenues.
+
+Si le dépôt contient déjà une application, commence par l'auditer et adapte l'architecture sans supprimer arbitrairement les fonctionnalités existantes.
+
+---
+
+# 1. Objectif fonctionnel
+
+Construire une PWA responsive, installable et élégante qui affiche les publications de résultats financiers d'entreprises cotées.
+
+## Marchés à couvrir
+
+### États-Unis
+- NYSE
+- Nasdaq
+- Principales capitalisations du S&P 500 et du Nasdaq-100, sous réserve de couverture de la source.
+
+### Europe
+- France : Euronext Paris, notamment CAC 40.
+- Allemagne : Xetra, notamment DAX.
+- Royaume-Uni : London Stock Exchange, notamment FTSE 100.
+- Suisse : SIX Swiss Exchange, notamment SMI.
+- Autres marchés européens lorsque les données et les licences le permettent.
+
+Ne prétends pas que tous ces marchés sont couverts tant que cela n'a pas été vérifié sur les données réelles.
+
+## Fonctionnalités du MVP
+
+- Vue quotidienne.
+- Vue hebdomadaire du lundi au vendredi.
+- Séparation « Avant ouverture » et « Après clôture ».
+- Session « Pendant la séance » et « Horaire inconnu ».
+- Sélecteur de marché : États-Unis, Europe, tous les marchés.
+- Recherche par nom et symbole.
+- Filtres par date, marché et statut.
+- Fiche détaillée d'une entreprise.
+- Distinction entre date confirmée, estimée et à vérifier.
+- Affichage de la source et de la dernière actualisation.
+- Conservation de la dernière version valide des données.
+- Installation PWA.
+- Consultation hors connexion des dernières données mises en cache.
+- Interface française.
+- Aucune connexion utilisateur requise.
+- Aucun système de notifications push dans le MVP.
+- Aucun conseil d'achat ou de vente.
+
+---
+
+# 2. Architecture technique imposée
+
+Utilise les technologies suivantes, sauf si le dépôt existant justifie une modification documentée :
+
+- React
+- TypeScript en mode strict
+- Vite
+- CSS responsive avec variables de design
+- `vite-plugin-pwa` et Workbox
+- Zod pour valider les données à l'exécution
+- Vitest pour les tests unitaires
+- React Testing Library pour les tests de composants
+- Playwright pour les tests end-to-end
+- ESLint
+- Prettier
+- GitHub Actions pour la collecte quotidienne
+- Un gestionnaire de paquets unique, avec fichier lock versionné
+
+Évite les dépendances inutiles et les bibliothèques de calendrier trop lourdes.
+
+## 2.1 Arborescence exacte attendue
+
+Crée cette structure en l'adaptant raisonnablement au dépôt existant.
+
+```text
+earnings-radar/
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       ├── update-earnings.yml
+│       └── deploy.yml
+├── public/
+│   ├── favicon.svg
+│   ├── icons/
+│   │   ├── icon-192.png
+│   │   ├── icon-512.png
+│   │   └── icon-maskable-512.png
+│   ├── offline.html
+│   └── manifest.webmanifest
+├── scripts/
+│   ├── update-earnings.ts
+│   ├── validate-calendar.ts
+│   └── lib/
+│       ├── fetch-calendar.ts
+│       ├── normalize-event.ts
+│       ├── validate-calendar.ts
+│       ├── merge-events.ts
+│       ├── classify-date-status.ts
+│       └── publish-calendar.ts
+├── src/
+│   ├── app/
+│   │   ├── App.tsx
+│   │   ├── router.tsx
+│   │   └── providers.tsx
+│   ├── components/
+│   │   ├── AppHeader.tsx
+│   │   ├── AppNavigation.tsx
+│   │   ├── MarketSelector.tsx
+│   │   ├── WeekNavigator.tsx
+│   │   ├── DayColumn.tsx
+│   │   ├── EarningsEventCard.tsx
+│   │   ├── SessionSection.tsx
+│   │   ├── StatusBadge.tsx
+│   │   ├── DataFreshness.tsx
+│   │   ├── SearchBar.tsx
+│   │   ├── FilterPanel.tsx
+│   │   ├── CompanyDetail.tsx
+│   │   ├── LoadingState.tsx
+│   │   ├── EmptyState.tsx
+│   │   ├── ErrorState.tsx
+│   │   └── OfflineBanner.tsx
+│   ├── features/
+│   │   ├── calendar/
+│   │   │   ├── CalendarPage.tsx
+│   │   │   ├── calendar-selectors.ts
+│   │   │   └── calendar-utils.ts
+│   │   ├── search/
+│   │   │   └── search-utils.ts
+│   │   └── preferences/
+│   │       ├── preferences.ts
+│   │       └── preferences-storage.ts
+│   ├── hooks/
+│   │   ├── useCalendarData.ts
+│   │   ├── useNetworkStatus.ts
+│   │   └── usePreferences.ts
+│   ├── lib/
+│   │   ├── date-utils.ts
+│   │   ├── formatters.ts
+│   │   ├── storage.ts
+│   │   └── constants.ts
+│   ├── services/
+│   │   ├── calendar-repository.ts
+│   │   ├── calendar-client.ts
+│   │   └── providers/
+│   │       ├── earnings-provider.ts
+│   │       └── alpha-vantage-provider.ts
+│   ├── types/
+│   │   └── earnings.ts
+│   ├── validation/
+│   │   └── earnings-schemas.ts
+│   ├── styles/
+│   │   ├── tokens.css
+│   │   ├── global.css
+│   │   ├── layout.css
+│   │   ├── calendar.css
+│   │   └── components.css
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── data/
+│   ├── calendar.json
+│   ├── calendar.schema.json
+│   └── README.md
+├── tests/
+│   ├── fixtures/
+│   │   ├── valid-calendar.json
+│   │   ├── invalid-calendar.json
+│   │   └── sample-events.json
+│   ├── unit/
+│   │   ├── normalize-event.test.ts
+│   │   ├── validate-calendar.test.ts
+│   │   ├── merge-events.test.ts
+│   │   ├── classify-date-status.test.ts
+│   │   ├── date-utils.test.ts
+│   │   └── search-utils.test.ts
+│   ├── components/
+│   │   ├── EarningsEventCard.test.tsx
+│   │   ├── CalendarPage.test.tsx
+│   │   └── DataFreshness.test.tsx
+│   └── e2e/
+│       ├── calendar.spec.ts
+│       ├── filters.spec.ts
+│       ├── offline.spec.ts
+│       └── pwa.spec.ts
+├── .env.example
+├── .gitignore
+├── .npmrc
+├── .prettierrc.json
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── playwright.config.ts
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── vitest.config.ts
+├── README.md
+├── SECURITY.md
+└── LICENSE
+```
+
+Les fichiers générés doivent être cohérents et réellement utilisés. Ne crée pas des fichiers vides uniquement pour reproduire l'arborescence.
+
+Si un fichier n'est pas pertinent, explique sa suppression ou son regroupement dans le rapport final.
+
+`data/calendar.json` doit toujours contenir un calendrier de production valide après le premier déploiement. Un calendrier vide est autorisé uniquement si aucune donnée réelle n'a encore été récupérée et si son état est explicitement signalé.
+
+Les fixtures de tests doivent rester sous `tests/fixtures/` et ne jamais être utilisées comme données de production.
+
+---
+
+# 3. Modèle TypeScript obligatoire
+
+Créer `src/types/earnings.ts`.
+
+Le modèle doit être strict, réutilisable et compatible avec les données normalisées des différents fournisseurs.
+
+```ts
+export type Market = "US" | "EU";
+
+export type DateStatus =
+  | "confirmed"
+  | "estimated"
+  | "unverified";
+
+export type EarningsSession =
+  | "before_open"
+  | "after_close"
+  | "during_session"
+  | "unknown";
+
+export interface EarningsEvent {
+  id: string;
+
+  symbol: string;
+  companyName: string;
+
+  market: Market;
+  exchange?: string;
+  country?: string;
+
+  announcementDate: string;
+  announcementTime?: string;
+  timeZone?: string;
+
+  session: EarningsSession;
+  dateStatus: DateStatus;
+
+  fiscalPeriod?: string;
+
+  epsEstimate?: number;
+  epsActual?: number;
+
+  revenueEstimate?: number;
+  revenueActual?: number;
+
+  currency?: string;
+
+  sourceName: string;
+  sourceUrl?: string;
+  sourceUpdatedAt?: string;
+
+  fetchedAt: string;
+}
+
+export interface CalendarMetadata {
+  schemaVersion: number;
+
+  generatedAt: string;
+  lastSuccessfulFetchAt: string | null;
+
+  provider: string;
+
+  status:
+    | "success"
+    | "partial"
+    | "stale"
+    | "unavailable";
+
+  eventCount: number;
+
+  markets: Market[];
+
+  warnings: string[];
+}
+
+export interface EarningsCalendar {
+  metadata: CalendarMetadata;
+  events: EarningsEvent[];
+}
+```
+
+Tu peux enrichir le modèle si cela est nécessaire, mais ne supprime pas les champs essentiels.
+
+## 3.1 Règles du modèle
+
+- `announcementDate` utilise strictement le format `YYYY-MM-DD`.
+- Les dates doivent être des dates calendaires valides.
+- `announcementTime` utilise le format `HH:mm` si disponible.
+- `timeZone` doit être un identifiant IANA valide.
+- `fetchedAt` et les horodatages techniques utilisent des dates ISO 8601 explicites.
+- `eventCount` doit être égal au nombre réel d'événements.
+- Les champs financiers facultatifs ne doivent pas être inventés.
+- Les montants financiers doivent être des nombres finis et conserver une unité et une devise lorsqu'elles sont connues.
+- Une valeur nulle ne doit pas être convertie arbitrairement en zéro.
+- Le symbole boursier doit rester distinct du nom de l'entreprise.
+- Les identifiants doivent être stables et indépendants de l'ordre du tableau.
+
+Si un champ supplémentaire est nécessaire pour distinguer l'annonce officielle de la collecte par l'API, ajoute une provenance explicite plutôt que de surcharger le sens de `fetchedAt`.
+
+---
+
+# 4. Validation à l'exécution avec Zod
+
+Créer `src/validation/earnings-schemas.ts`.
+
+Valider les données JSON à chaque frontière de confiance :
+
+- réponses du fournisseur
+- fichiers générés
+- fichiers téléchargés par le navigateur
+- données restaurées depuis le cache
+
+Créer des schémas Zod pour `EarningsEvent`, `CalendarMetadata` et `EarningsCalendar`.
+
+La validation doit couvrir :
+
+1. Les types et champs obligatoires.
+2. Les formats de date et d'heure.
+3. Les dates impossibles.
+4. Les identifiants et symboles vides.
+5. Les statuts et sessions autorisés.
+6. Les nombres non finis.
+7. Les valeurs négatives ou incohérentes, selon la métrique.
+8. Les URLs de source autorisées.
+9. Les fuseaux horaires.
+10. Les doublons d'identifiants.
+11. La cohérence entre les métadonnées et le tableau d'événements.
+12. Les tailles maximales raisonnables des fichiers et des champs.
+13. La présence des informations de provenance.
+
+Les erreurs doivent être explicites et exploitables dans les logs.
+
+Ne jamais accepter silencieusement un événement invalide.
+
+Distinguer les erreurs bloquantes des avertissements non bloquants.
+
+Une anomalie bloquante doit empêcher la publication du nouveau calendrier.
+
+---
+
+# 5. Intégration sécurisée d'Alpha Vantage
+
+Créer :
+
+- `src/services/providers/earnings-provider.ts`
+- `src/services/providers/alpha-vantage-provider.ts`
+- `scripts/lib/fetch-calendar.ts`
+
+## 5.1 Interface fournisseur
+
+Définir une interface indépendante du fournisseur :
+
+```ts
+export interface EarningsProvider {
+  readonly name: string;
+
+  fetchCalendar(options: {
+    startDate: string;
+    endDate: string;
+    markets: ("US" | "EU")[];
+  }): Promise<unknown>;
+}
+```
+
+Adapte la signature si nécessaire, mais conserve la séparation entre récupération brute, normalisation et validation.
+
+## 5.2 Variable secrète
+
+Utiliser exclusivement :
+
+`ALPHA_VANTAGE_API_KEY`
+
+Côté GitHub Actions, la clé doit provenir d'un secret de dépôt ou d'environnement.
+
+Ne jamais :
+
+- placer la clé dans `VITE_*`
+- l'intégrer dans un fichier du dossier `public/`
+- l'inclure dans `data/calendar.json`
+- la placer dans le code React
+- la stocker dans localStorage ou IndexedDB
+- la transmettre au navigateur
+- l'imprimer dans les logs
+- l'inscrire dans une URL qui serait journalisée sans précaution
+
+Le processus d'intégration financière s'exécute uniquement côté Node.js dans GitHub Actions.
+
+Pour une requête fournisseur, utiliser une méthode d'authentification conforme à la documentation officielle. Si le fournisseur impose une clé dans les paramètres d'URL, construire la requête dans le processus serveur et masquer les paramètres sensibles dans les logs.
+
+Les erreurs doivent être assainies avant d'être consignées.
+
+## 5.3 Configuration locale
+
+Créer `.env.example` :
+
+```dotenv
+# Local development / data-generation only.
+# Never expose this variable through Vite or the browser.
+ALPHA_VANTAGE_API_KEY=
+```
+
+Ajouter `.env`, `.env.local` et les variantes secrètes au `.gitignore`.
+
+Ne jamais ajouter de véritable clé au dépôt.
+
+Si une clé réelle est trouvée dans l'historique Git, signaler le problème et recommander sa révocation. Ne pas prétendre que sa suppression du dernier commit suffit.
+
+## 5.4 Faisabilité de l'endpoint
+
+Avant l'intégration finale :
+
+1. Consulter la documentation officielle actuelle d'Alpha Vantage.
+2. Identifier l'endpoint officiel de calendrier des résultats.
+3. Vérifier les paramètres requis et les formats de réponse.
+4. Vérifier les quotas du plan gratuit.
+5. Vérifier que le calendrier est effectivement accessible avec le plan choisi.
+6. Vérifier la couverture européenne.
+7. Vérifier les conditions d'utilisation et de redistribution.
+8. Tester une réponse réelle si une clé valide est disponible.
+
+Si l'endpoint est payant ou inaccessible avec le plan gratuit :
+
+- Ne pas contourner la restriction.
+- Ne pas prétendre que l'intégration fonctionne.
+- Documenter précisément le blocage.
+- Garder l'adaptateur isolé.
+- Continuer les développements frontend et les tests avec des fixtures clairement identifiées.
+- Prévoir une configuration permettant de désactiver le fournisseur indisponible.
+
+L'application doit afficher honnêtement les limites de couverture.
+
+## 5.5 Gestion des quotas et des erreurs
+
+Implémenter :
+
+- délai d'expiration des requêtes
+- retries limités avec backoff exponentiel
+- traitement spécifique des erreurs de quota
+- traitement des erreurs réseau
+- validation du code HTTP
+- validation du JSON
+- détection des réponses contenant des messages d'erreur fournisseur
+- journalisation sans secret
+- interruption propre si les données sont inutilisables
+
+Ne pas relancer indéfiniment une requête.
+
+Ne pas lancer un appel API pour chaque entreprise au chargement du calendrier dans le navigateur.
+
+---
+
+# 6. Normalisation et classification des dates
+
+Créer :
+
+- `scripts/lib/normalize-event.ts`
+- `scripts/lib/classify-date-status.ts`
+- `scripts/lib/merge-events.ts`
+
+## 6.1 Normalisation
+
+La couche de normalisation transforme la réponse brute du fournisseur en événements internes.
+
+Elle doit :
+
+- convertir les noms de champs
+- normaliser les symboles
+- préserver la date annoncée par la source
+- normaliser les fuseaux horaires lorsqu'ils sont disponibles
+- convertir les nombres sans perdre les valeurs nulles
+- attacher la provenance
+- rejeter les événements incomplets ou incohérents
+- conserver les anomalies sous forme d'avertissements lorsque c'est pertinent
+
+Ne pas déduire artificiellement un horaire précis à partir d'une session approximative.
+
+## 6.2 Classification
+
+Une date ne peut être classée `confirmed` que si la source et les règles de confirmation permettent réellement de l'attester.
+
+Une date provenant uniquement d'une prévision fournisseur doit rester `estimated`.
+
+Une date ambiguë, contradictoire ou dépourvue de provenance suffisante doit être `unverified`.
+
+Ne jamais déduire une confirmation du seul fait que la date est proche.
+
+Si aucune source officielle vérifiable n'est disponible, conserve le statut estimé ou non vérifié.
+
+## 6.3 Dédoublonnage
+
+Fusionner uniquement les événements dont l'identité est suffisamment établie.
+
+Utiliser les informations disponibles :
+
+- symbole
+- place boursière
+- date
+- période fiscale
+- identifiant fournisseur
+
+Ne jamais fusionner automatiquement deux événements uniquement parce que leurs noms se ressemblent.
+
+Conserver une trace des conflits.
+
+Lorsqu'une source officielle contredit une estimation, appliquer une règle de priorité documentée et conserver les informations de provenance.
+
+Ne pas inventer de résolution lorsqu'il existe un conflit non résolu.
+
+---
+
+# 7. Pipeline GitHub Actions
+
+Créer `.github/workflows/update-earnings.yml`.
+
+Le workflow doit :
+
+- s'exécuter quotidiennement
+- permettre un déclenchement manuel
+- utiliser une version de Node.js LTS compatible avec le projet
+- installer les dépendances avec `npm ci`
+- lancer les contrôles nécessaires avant publication
+- charger le secret `ALPHA_VANTAGE_API_KEY`
+- récupérer et normaliser les données
+- valider l'ensemble du calendrier
+- conserver le calendrier précédent si la génération échoue
+- publier atomiquement le nouveau fichier si tous les contrôles bloquants passent
+- produire un résumé d'exécution sans secret
+
+Choisir une heure UTC documentée et tolérer les retards d'exécution de GitHub Actions.
+
+## 7.1 Sécurité du workflow
+
+Utiliser :
+
+```yaml
+permissions:
+  contents: read
+```
+
+pour les étapes qui ne nécessitent qu'une lecture du dépôt.
+
+N'accorder `contents: write` que si la méthode de publication retenue nécessite réellement un commit ou une écriture dans le dépôt.
+
+Privilégier une publication séparée ou un artefact lorsque cela simplifie les permissions.
+
+Si le workflow écrit dans le dépôt :
+
+- restreindre les permissions
+- ne jamais exécuter de code non fiable avec des secrets
+- ne pas utiliser `pull_request_target` pour exécuter du code externe
+- éviter les workflows récursifs
+- éviter les pushes concurrents non maîtrisés
+- documenter la stratégie de branche et de publication
+
+Définir une politique de concurrence afin que deux exécutions ne puissent pas écraser leurs résultats mutuellement.
+
+Utiliser `timeout-minutes` et des versions d'actions stables et maintenues.
+
+## 7.2 Exemple de structure du workflow
+
+Implémente un workflow complet équivalent au schéma suivant, adapté à la méthode de publication retenue :
+
+```yaml
+name: Update earnings calendar
+
+on:
+  schedule:
+    - cron: "17 5 * * 1-6"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: earnings-calendar-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run validation tests
+        run: npm run test:run
+
+      - name: Generate and validate calendar
+        env:
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+        run: npm run data:update
+
+      - name: Validate generated calendar
+        run: npm run data:validate
+
+      - name: Publish validated calendar
+        run: npm run data:publish
+```
+
+Cet extrait constitue une structure de départ, pas une garantie que toutes les étapes de publication fonctionnent sans adaptation.
+
+Codex doit implémenter les scripts, les permissions, la méthode de publication et les contrôles nécessaires.
+
+Si le script échoue, le workflow doit échouer clairement et conserver le calendrier précédent.
+
+Ne jamais ajouter un secret au contexte d'un job qui n'en a pas besoin.
+
+Ne pas publier un fichier JSON vide à la suite d'une panne fournisseur.
+
+## 7.3 Gestion des données
+
+Créer `scripts/update-earnings.ts` pour orchestrer le processus.
+
+Ordre impératif :
+
+1. Vérifier la configuration.
+2. Charger la dernière version valide.
+3. Récupérer les données.
+4. Normaliser les événements.
+5. Vérifier les statuts et la provenance.
+6. Détecter les doublons.
+7. Valider les dates et les fuseaux.
+8. Vérifier la fraîcheur et la cohérence du volume.
+9. Générer un fichier temporaire.
+10. Valider le fichier temporaire.
+11. Publier uniquement si toutes les validations bloquantes passent.
+12. Enregistrer les métadonnées de génération.
+
+La publication doit être atomique : écrire d'abord dans un fichier temporaire, puis remplacer le fichier final seulement après validation.
+
+Ne jamais modifier ou tronquer le fichier valide avant la réussite complète du traitement.
+
+## 7.4 Détection des anomalies
+
+Prévoir des contrôles configurables pour :
+
+- réponse vide inattendue
+- volume d'événements anormalement faible
+- disparition soudaine d'un grand nombre d'événements
+- dates impossibles
+- doublons
+- valeurs numériques non finies
+- source inconnue
+- statut incohérent
+- horodatage de collecte incohérent
+- données trop anciennes
+
+Un faible volume ne doit pas être automatiquement considéré comme une erreur si la période concernée contient peu de publications. Les seuils doivent être configurables et documentés.
+
+---
+
+# 8. Interface visuelle
+
+Créer une interface élégante, inspirée des trois calendriers fournis.
+
+## 8.1 Identité visuelle
+
+Palette initiale :
+
+- bleu nuit pour l'en-tête et les surfaces principales
+- fond ivoire ou blanc cassé pour le calendrier
+- doré discret pour les accents
+- gris neutres pour les séparateurs et métadonnées
+- couleurs de statut accessibles et accompagnées de texte
+
+Définir les couleurs dans `src/styles/tokens.css`.
+
+Éviter les effets excessifs, les animations inutiles et les cartes génériques qui ne reproduisent pas l'organisation des calendriers de référence.
+
+## 8.2 En-tête
+
+Afficher :
+
+- nom Earnings Radar
+- date actuelle selon le fuseau de référence choisi
+- plage de la semaine
+- statut de synchronisation
+- navigation vers la semaine précédente et suivante
+- sélecteur États-Unis / Europe / Tous
+- champ de recherche
+
+## 8.3 Calendrier desktop
+
+Afficher les jours ouvrés sous forme de colonnes.
+
+Dans chaque journée, distinguer :
+
+- Avant ouverture
+- Pendant la séance, si disponible
+- Après clôture
+- Horaire inconnu
+
+Chaque événement doit afficher :
+
+- nom de l'entreprise
+- symbole boursier
+- place boursière ou pays, si disponible
+- badge du statut
+- heure, uniquement lorsqu'elle est connue
+- accès à une fiche détaillée
+
+Le logo est facultatif. Si les droits ne sont pas validés, utiliser une représentation textuelle neutre.
+
+## 8.4 Calendrier mobile
+
+Ne pas simplement réduire la grille desktop.
+
+Créer une présentation mobile adaptée :
+
+- sélecteur horizontal des jours
+- sections par session
+- cartes compactes
+- recherche facilement accessible
+- filtres utilisables au toucher
+- détails accessibles sans débordement horizontal
+
+## 8.5 États de l'interface
+
+Implémenter :
+
+- chargement initial
+- calendrier disponible
+- aucun événement pour la journée
+- données indisponibles
+- données anciennes
+- connexion interrompue
+- données récupérées depuis le cache
+- erreur de validation ou de chargement
+
+L'interface doit différencier une journée réellement sans publication d'un calendrier indisponible.
+
+## 8.6 Accessibilité
+
+- Navigation complète au clavier.
+- Libellés accessibles.
+- Contrastes conformes aux bonnes pratiques WCAG 2.2 AA.
+- Les couleurs ne sont jamais le seul moyen de distinguer les statuts.
+- Respect de `prefers-reduced-motion`.
+- Gestion des focus et des erreurs.
+- Compatibilité avec les lecteurs d'écran.
+
+---
+
+# 9. Dates et fuseaux horaires
+
+Créer `src/lib/date-utils.ts`.
+
+Les dates de publication doivent être traitées comme des dates calendaires locales de marché, et non comme des horodatages UTC arbitrairement convertis.
+
+Utiliser des identifiants IANA lorsque les fuseaux sont connus :
+
+- `America/New_York`
+- `Europe/Paris`
+- `Europe/Berlin`
+- `Europe/London`
+- `Europe/Zurich`
+
+Le fuseau de référence doit être explicitement choisi et documenté.
+
+Tester :
+
+- changements d'heure d'été et d'hiver
+- différence de calendrier entre les États-Unis et l'Europe
+- publications sans heure précise
+- dates en fin de semaine
+- dates invalides
+- publication annoncée dans un fuseau différent du fuseau de l'utilisateur
+
+Ne pas attribuer une heure artificielle à un événement dont l'heure est inconnue.
+
+Ne pas déplacer la date d'un événement uniquement parce que le navigateur est dans un autre fuseau.
+
+---
+
+# 10. PWA et fonctionnement hors connexion
+
+Configurer le manifeste et le service worker dans `vite.config.ts`.
+
+Créer `public/manifest.webmanifest`.
+
+Le manifeste doit contenir :
+
+- nom : Earnings Radar
+- nom court : Earnings Radar
+- description en français
+- icônes adaptées
+- couleurs de thème
+- mode d'affichage standalone
+- chemins de démarrage et de portée corrects
+
+Créer des icônes réellement valides. Ne pas laisser des références à des fichiers inexistants.
+
+## 10.1 Stratégie de cache
+
+Utiliser Workbox avec une stratégie adaptée à chaque ressource :
+
+- ressources statiques versionnées : cache-first
+- document principal : stratégie garantissant un fallback hors connexion
+- calendrier JSON : network-first avec fallback vers le dernier calendrier valide
+- erreurs réseau : conserver le cache précédent
+- ne jamais remplacer une réponse valide en cache par un document d'erreur
+
+Définir des durées de cache et des règles d'invalidation documentées.
+
+Éviter de mettre en cache des réponses d'erreur comme si elles constituaient un calendrier valide.
+
+## 10.2 Mise à jour des données
+
+L'application doit :
+
+1. charger le calendrier distant lorsqu'une connexion est disponible
+2. valider le JSON
+3. remplacer le cache uniquement si le JSON est valide
+4. conserver l'ancien calendrier en cas d'erreur
+5. afficher la date de dernière actualisation réussie
+6. afficher un avertissement si les données sont périmées
+7. ne jamais prétendre que les données sont à jour lorsqu'aucune vérification récente n'a réussi
+
+Le service worker ne doit pas être présenté comme un mécanisme garantissant une synchronisation en arrière-plan lorsque l'application est fermée.
+
+## 10.3 Séparation des caches
+
+Séparer le cache des ressources statiques du cache des données.
+
+Lors d'une nouvelle version :
+
+- invalider les ressources devenues incompatibles
+- préserver le dernier calendrier valide si cela est possible
+- gérer les migrations de schéma
+- éviter les boucles de rechargement
+- afficher une erreur explicite en cas de migration impossible
+
+---
+
+# 11. Recherche, filtres et préférences
+
+Créer une recherche rapide sur :
+
+- nom de l'entreprise
+- symbole
+- place boursière
+
+Ajouter les filtres :
+
+- marché
+- date
+- session
+- statut
+
+Les filtres doivent être combinables.
+
+Les préférences non sensibles peuvent être conservées localement.
+
+Ne pas ajouter de compte utilisateur ni de synchronisation cloud.
+
+Prévoir un bouton permettant de réinitialiser les filtres.
+
+Les filtres doivent continuer à fonctionner hors connexion avec les données mises en cache.
+
+---
+
+# 12. Tests automatisés
+
+Configurer `vitest.config.ts` et `playwright.config.ts`.
+
+Ajouter les scripts nécessaires dans `package.json` :
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -b --pretty false",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "data:update": "tsx scripts/update-earnings.ts",
+    "data:validate": "tsx scripts/validate-calendar.ts",
+    "data:publish": "tsx scripts/lib/publish-calendar.ts"
+  }
+}
+```
+
+Adapter les commandes aux outils réellement installés. Chaque script doit fonctionner.
+
+## 12.1 Tests unitaires
+
+Tester :
+
+- validation du modèle
+- normalisation des événements
+- dates invalides
+- fuseaux horaires
+- classification des statuts
+- dédoublonnage
+- conflits entre sources
+- recherche
+- filtres
+- formatage des dates
+- gestion des valeurs financières manquantes
+- fraîcheur du calendrier
+- échec du fournisseur
+- respect des quotas
+- préservation du dernier calendrier valide
+
+## 12.2 Tests de composants
+
+Tester :
+
+- affichage d'un événement
+- badge de statut
+- navigation hebdomadaire
+- filtres combinés
+- recherche
+- état vide
+- état d'erreur
+- avertissement de données anciennes
+- affichage mobile
+
+## 12.3 Tests end-to-end
+
+Avec Playwright, tester :
+
+1. ouverture de la page d'accueil
+2. navigation entre deux semaines
+3. filtrage des marchés
+4. recherche par symbole
+5. ouverture d'une fiche entreprise
+6. comportement sans connexion
+7. restauration des données mises en cache
+8. absence de perte du calendrier après une réponse API invalide
+9. présence des métadonnées PWA
+10. absence de débordement horizontal sur mobile
+
+Les tests ne doivent pas dépendre d'une API financière payante ou d'une clé réelle.
+
+Utiliser des réponses simulées explicitement réservées aux tests.
+
+---
+
+# 13. CI — Intégration continue
+
+Créer `.github/workflows/ci.yml`.
+
+À chaque pull request et push pertinent :
+
+- installer les dépendances avec `npm ci`
+- exécuter ESLint
+- vérifier le formatage
+- vérifier TypeScript
+- exécuter les tests unitaires
+- construire l'application
+- vérifier l'intégrité des fichiers produits
+- exécuter les tests end-to-end lorsque l'environnement le permet
+
+Les tests de CI ne doivent pas appeler l'API financière réelle.
+
+Aucun secret financier ne doit être accessible aux tests des pull requests provenant de forks.
+
+La CI doit échouer lorsqu'un contrôle obligatoire échoue.
+
+---
+
+# 14. Déploiement
+
+Créer `.github/workflows/deploy.yml` seulement après avoir déterminé une cible de déploiement compatible.
+
+Privilégier un hébergement statique offrant :
+
+- HTTPS
+- publication de fichiers statiques
+- prise en charge des routes de la PWA
+- cache configurable
+- coût nul ou très faible pour le trafic initial
+
+Vérifier les conditions d'utilisation de l'hébergeur.
+
+Ne pas supposer que GitHub Pages est automatiquement adapté à tout usage.
+
+Configurer correctement le chemin de base de Vite pour le domaine choisi.
+
+Le déploiement ne doit pas exposer de clé API.
+
+Documenter :
+
+- la cible d'hébergement
+- les paramètres de build
+- le chemin de base
+- les règles de cache
+- la configuration des secrets
+- la procédure de retour à une version précédente
+
+Si les informations nécessaires à un déploiement réel sont absentes, terminer une version déployable et documenter précisément les paramètres qui restent à renseigner.
+
+---
+
+# 15. Documentation obligatoire
+
+## README.md
+
+Documenter :
+
+- objectif de l'application
+- fonctionnalités
+- architecture
+- prérequis
+- installation locale
+- démarrage du serveur de développement
+- tests
+- build de production
+- configuration d'Alpha Vantage
+- fonctionnement de l'automatisation
+- déploiement
+- limites des données
+- installation de la PWA
+
+## SECURITY.md
+
+Documenter :
+
+- gestion des secrets
+- procédure de rotation de clé
+- signalement des vulnérabilités
+- dépendances et mises à jour
+- traitement des erreurs fournisseur
+- règles de validation
+- limites de sécurité de l'application
+
+## data/README.md
+
+Documenter :
+
+- structure du calendrier
+- version du schéma
+- origine des données
+- fréquence de génération
+- politique de rétention
+- statut des dates
+- procédure de validation
+- distinction entre fixtures et données réelles
+
+---
+
+# 16. Critères d'acceptation obligatoires
+
+Le MVP est accepté uniquement lorsque les critères suivants ont été vérifiés.
+
+## A. Application
+
+- [ ] L'application démarre en local.
+- [ ] Le build de production réussit.
+- [ ] TypeScript strict ne signale aucune erreur.
+- [ ] ESLint passe.
+- [ ] Les tests unitaires passent.
+- [ ] Les tests de composants passent.
+- [ ] Les tests end-to-end pertinents passent.
+- [ ] L'interface est responsive.
+
+## B. Données
+
+- [ ] Le schéma est validé avec Zod.
+- [ ] Les dates et les fuseaux sont correctement traités.
+- [ ] Les dates estimées ne sont jamais présentées comme confirmées.
+- [ ] Les sources sont visibles.
+- [ ] Les données invalides ne sont pas publiées.
+- [ ] Les réponses vides inattendues sont détectées.
+- [ ] Les données précédentes sont préservées en cas d'échec.
+- [ ] La dernière actualisation réussie est visible.
+- [ ] Les données de test ne sont jamais présentées comme réelles.
+
+## C. API et sécurité
+
+- [ ] `ALPHA_VANTAGE_API_KEY` n'est utilisée que côté automatisation.
+- [ ] Aucune clé n'apparaît dans le bundle frontend.
+- [ ] Aucune clé n'apparaît dans les données JSON publiées.
+- [ ] Aucune clé n'apparaît dans les logs.
+- [ ] Les quotas sont traités correctement.
+- [ ] Les conditions d'accès à l'endpoint sont documentées.
+- [ ] La couverture américaine et européenne réellement disponible est documentée.
+- [ ] Les droits d'utilisation des données sont vérifiés ou clairement signalés comme restant à confirmer.
+
+## D. Automatisation
+
+- [ ] Le workflow est valide.
+- [ ] Le déclenchement manuel fonctionne.
+- [ ] La tâche planifiée est configurée.
+- [ ] Le pipeline valide avant de publier.
+- [ ] Une erreur ne détruit pas le dernier calendrier valide.
+- [ ] La publication est atomique.
+- [ ] Les journaux ne contiennent pas de secrets.
+- [ ] La méthode de publication et les permissions sont documentées.
+
+## E. PWA
+
+- [ ] Le manifeste est valide.
+- [ ] Les icônes existent.
+- [ ] Le site est installable sur les navigateurs ciblés.
+- [ ] Les ressources statiques sont mises en cache.
+- [ ] Le calendrier est consultable hors connexion après une première récupération réussie.
+- [ ] Le dernier calendrier valide est conservé.
+- [ ] L'état de fraîcheur est visible.
+- [ ] Les erreurs de mise à jour sont gérées.
+
+## F. Livraison
+
+- [ ] README complet.
+- [ ] SECURITY.md complet.
+- [ ] Rapport de tests réel.
+- [ ] Liste des limites restantes.
+- [ ] Instructions de déploiement.
+- [ ] Aucune fonctionnalité critique ne reste simulée sans indication explicite.
+
+---
+
+# 17. Ordre d'exécution imposé à Codex
+
+Procède dans cet ordre.
+
+### Étape 1 — Audit du dépôt
+
+Inspecte :
+
+- fichiers existants
+- gestionnaire de paquets
+- scripts
+- dépendances
+- configuration TypeScript
+- tests
+- workflows
+- secrets référencés, sans jamais les afficher
+- état Git
+
+Présente un bref diagnostic avant les changements importants.
+
+### Étape 2 — Plan d'implémentation
+
+Établis un plan concis avec les fichiers à créer ou modifier.
+
+Identifie les blocages éventuels liés au fournisseur financier.
+
+### Étape 3 — Socle technique
+
+Créer la structure, les types, les schémas, les configurations et les scripts.
+
+Installer les dépendances nécessaires.
+
+### Étape 4 — Modèle et données
+
+Implémenter la validation, la normalisation, le dédoublonnage et les fixtures de test.
+
+Ne pas confondre fixtures et données de production.
+
+### Étape 5 — Interface
+
+Construire le calendrier desktop et mobile, les filtres, la recherche et les fiches.
+
+Relier l'interface au dépôt de données réel, avec un état de chargement, une gestion des erreurs et un fallback hors connexion.
+
+### Étape 6 — Intégration financière
+
+Vérifier l'endpoint et le plan Alpha Vantage.
+
+Implémenter l'adaptateur uniquement si les conditions d'accès sont compatibles.
+
+Documenter les limitations si elles ne le sont pas.
+
+### Étape 7 — Automatisation
+
+Créer les workflows de CI et de génération quotidienne.
+
+Tester les échecs, les quotas, les données invalides et la conservation de l'ancien calendrier.
+
+### Étape 8 — PWA
+
+Configurer le manifeste, les icônes, le service worker, les caches et la stratégie de mise à jour.
+
+### Étape 9 — Vérification finale
+
+Exécuter les commandes de formatage, lint, typecheck, tests, build et tests end-to-end disponibles.
+
+Corriger les erreurs au lieu de les masquer.
+
+### Étape 10 — Rapport de livraison
+
+À la fin, fournir un rapport comprenant :
+
+1. Fichiers créés.
+2. Fichiers modifiés.
+3. Fonctionnalités réellement implémentées.
+4. Résultats des commandes de tests.
+5. Résultat du build.
+6. État réel de l'intégration Alpha Vantage.
+7. État de l'automatisation.
+8. État de la PWA et du cache hors connexion.
+9. Éléments non implémentés.
+10. Secrets et paramètres à configurer manuellement.
+11. Procédure de lancement local.
+12. Procédure de déploiement.
+
+Ne déclare pas le projet terminé si des critères P0 échouent.
+
+Ne prétends pas avoir déployé le site si tu n'as pas réellement exécuté et vérifié le déploiement.
+
+Ne prétends pas que l'API fonctionne si tu n'as pas vérifié une réponse réelle ou une preuve suffisante de compatibilité.
+
+**Commence maintenant par l'étape 1 : inspecte le dépôt courant, identifie son état et propose le plan d'implémentation. Puis exécute les étapes dans l'ordre, sans t'arrêter à une maquette.**
