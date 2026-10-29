@@ -14,9 +14,7 @@ function isValidCalendarDate(dateStr: string): boolean {
   const day = parseInt(dayStr, 10);
   const date = new Date(Date.UTC(year, month, day));
   return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month &&
-    date.getUTCDate() === day
+    date.getUTCFullYear() === year && date.getUTCMonth() === month && date.getUTCDate() === day
   );
 }
 
@@ -31,61 +29,100 @@ export const EarningsSessionSchema = z.enum([
   'unknown',
 ]);
 
-export const EarningsEventSchema = z.object({
-  id: z
-    .string()
-    .min(1, 'ID must not be empty')
-    .max(128, 'ID too long'),
-  symbol: z
-    .string()
-    .min(1, 'Symbol must not be empty')
-    .max(20, 'Symbol too long')
-    .regex(/^[A-Za-z0-9.\-_:]+$/, 'Invalid ticker symbol format'),
-  companyName: z
-    .string()
-    .min(1, 'Company name must not be empty')
-    .max(250, 'Company name too long'),
-  market: MarketSchema,
-  exchange: z.string().max(50).optional(),
-  country: z.string().max(50).optional(),
-  announcementDate: z
-    .string()
-    .refine(isValidCalendarDate, {
+export const SourceTypeSchema = z.enum([
+  'press_release',
+  'ir_calendar',
+  'regulatory_filing',
+  'broker_consensus',
+  'algorithmic_projection',
+  'unverified',
+]);
+
+export const EarningsEventSchema = z
+  .object({
+    id: z.string().min(1, 'ID must not be empty').max(128, 'ID too long'),
+    symbol: z
+      .string()
+      .min(1, 'Symbol must not be empty')
+      .max(20, 'Symbol too long')
+      .regex(/^[A-Za-z0-9.\-_:]+$/, 'Invalid ticker symbol format'),
+    companyName: z
+      .string()
+      .min(1, 'Company name must not be empty')
+      .max(250, 'Company name too long'),
+    market: MarketSchema,
+    exchange: z.string().max(50).optional(),
+    country: z.string().max(50).optional(),
+    announcementDate: z.string().refine(isValidCalendarDate, {
       message: 'announcementDate must be a valid calendar date in YYYY-MM-DD format',
     }),
-  announcementTime: z
-    .string()
-    .regex(TIME_REGEX, 'announcementTime must be in HH:mm format')
-    .optional(),
-  timeZone: z
-    .string()
-    .max(64)
-    .optional()
-    .refine(
-      (tz) => {
-        if (!tz) return true;
-        try {
-          Intl.DateTimeFormat(undefined, { timeZone: tz });
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      { message: 'Invalid IANA timeZone' }
-    ),
-  session: EarningsSessionSchema,
-  dateStatus: DateStatusSchema,
-  fiscalPeriod: z.string().max(30).optional(),
-  epsEstimate: z.number().finite().optional(),
-  epsActual: z.number().finite().optional(),
-  revenueEstimate: z.number().finite().min(0, 'Revenue cannot be negative').optional(),
-  revenueActual: z.number().finite().min(0, 'Revenue cannot be negative').optional(),
-  currency: z.string().length(3).regex(/^[A-Z]{3}$/, 'Currency must be 3 uppercase letters').optional(),
-  sourceName: z.string().min(1, 'sourceName is required').max(100),
-  sourceUrl: z.string().url('sourceUrl must be a valid URL').optional(),
-  sourceUpdatedAt: z.string().datetime().optional(),
-  fetchedAt: z.string().datetime({ message: 'fetchedAt must be an ISO-8601 string' }),
-});
+    announcementTime: z
+      .string()
+      .regex(TIME_REGEX, 'announcementTime must be in HH:mm format')
+      .optional(),
+    timeZone: z
+      .string()
+      .max(64)
+      .optional()
+      .refine(
+        (tz) => {
+          if (!tz) return true;
+          try {
+            Intl.DateTimeFormat(undefined, { timeZone: tz });
+            return true;
+          } catch {
+            return false;
+          }
+        },
+        { message: 'Invalid IANA timeZone' }
+      ),
+    session: EarningsSessionSchema,
+    dateStatus: DateStatusSchema,
+    fiscalPeriod: z.string().max(30).optional(),
+    epsEstimate: z.number().finite().optional(),
+    epsActual: z.number().finite().optional(),
+    revenueEstimate: z.number().finite().min(0, 'Revenue cannot be negative').optional(),
+    revenueActual: z.number().finite().min(0, 'Revenue cannot be negative').optional(),
+    currency: z
+      .string()
+      .length(3)
+      .regex(/^[A-Z]{3}$/, 'Currency must be 3 uppercase letters')
+      .optional(),
+    sourceName: z.string().min(1, 'sourceName is required').max(100),
+    sourceUrl: z.string().url('sourceUrl must be a valid URL').optional(),
+    sourceType: SourceTypeSchema.optional(),
+    sourceUpdatedAt: z.string().datetime().optional(),
+    verifiedAt: z.string().datetime().optional(),
+    officialAnnouncementDate: z
+      .string()
+      .refine(isValidCalendarDate, {
+        message: 'officialAnnouncementDate must be a valid YYYY-MM-DD date',
+      })
+      .optional(),
+    fetchedAt: z.string().datetime({ message: 'fetchedAt must be an ISO-8601 string' }),
+  })
+  .superRefine((ev, ctx) => {
+    // Audit rule: A date CANNOT be confirmed without an authentic official source
+    if (ev.dateStatus === 'confirmed') {
+      if (!ev.sourceUrl) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Confirmed date for "${ev.symbol}" requires an official sourceUrl proof.`,
+          path: ['sourceUrl'],
+        });
+      }
+      if (
+        ev.sourceType &&
+        ['broker_consensus', 'algorithmic_projection', 'unverified'].includes(ev.sourceType)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Event "${ev.symbol}" has dateStatus="confirmed" but sourceType is "${ev.sourceType}". Projections cannot be marked confirmed.`,
+          path: ['dateStatus'],
+        });
+      }
+    }
+  });
 
 export const CalendarMetadataSchema = z.object({
   schemaVersion: z.number().int().min(1),

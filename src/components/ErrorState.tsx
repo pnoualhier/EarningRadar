@@ -15,9 +15,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({ message, onRetry }) => {
       <h3 className="text-base font-bold text-slate-800 mb-1">
         Erreur de chargement du calendrier
       </h3>
-      <p className="text-xs text-slate-500 max-w-md mb-6 leading-relaxed">
-        {message}
-      </p>
+      <p className="text-xs text-slate-500 max-w-md mb-6 leading-relaxed">{message}</p>
       <button
         type="button"
         onClick={onRetry}

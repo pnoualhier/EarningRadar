@@ -12,9 +12,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ searchQuery, onResetFilt
       <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-4 shadow-inner">
         <SearchX className="w-8 h-8" />
       </div>
-      <h3 className="text-base font-bold text-slate-800 mb-1">
-        Aucune publication trouvée
-      </h3>
+      <h3 className="text-base font-bold text-slate-800 mb-1">Aucune publication trouvée</h3>
       <p className="text-xs text-slate-500 max-w-sm mb-6">
         {searchQuery
           ? `Aucun résultat ne correspond à la recherche « ${searchQuery} » pour les critères sélectionnés.`

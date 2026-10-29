@@ -38,9 +38,7 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ event, onClose }) 
         <div className="flex items-start justify-between p-5 border-b border-slate-800 bg-slate-950/40">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xl font-black tracking-tight text-white">
-                {event.symbol}
-              </span>
+              <span className="text-xl font-black tracking-tight text-white">{event.symbol}</span>
               <span
                 className={`text-xs px-2 py-0.5 rounded font-bold ${
                   event.market === 'US'
@@ -87,7 +85,9 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ event, onClose }) 
               </div>
               <div className="text-slate-100 font-semibold text-xs">
                 {sessionInfo?.label}
-                {formattedTime && <span className="block text-slate-400 text-[11px]">{formattedTime}</span>}
+                {formattedTime && (
+                  <span className="block text-slate-400 text-[11px]">{formattedTime}</span>
+                )}
               </div>
             </div>
           </div>
@@ -124,7 +124,9 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ event, onClose }) 
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="bg-slate-900/60 p-2.5 rounded-lg border border-slate-800">
-                <span className="text-slate-400 block text-[11px]">Bénéfice net / action (BPA)</span>
+                <span className="text-slate-400 block text-[11px]">
+                  Bénéfice net / action (BPA)
+                </span>
                 <span className="text-sm font-bold text-slate-100">
                   {formatEps(event.epsEstimate, event.currency)}
                 </span>
@@ -180,7 +182,8 @@ export const CompanyDetail: React.FC<CompanyDetailProps> = ({ event, onClose }) 
 
         {/* Footer disclaimer */}
         <div className="p-4 bg-slate-950/80 border-t border-slate-800 text-[10px] text-slate-400 text-center leading-normal">
-          Earnings Radar affiche uniquement des informations de calendrier financier. Aucun conseil d’achat ou de vente.
+          Earnings Radar affiche uniquement des informations de calendrier financier. Aucun conseil
+          d’achat ou de vente.
         </div>
       </div>
     </div>

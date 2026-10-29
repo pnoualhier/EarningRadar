@@ -88,9 +88,7 @@ export const PWAInstallButton: React.FC = () => {
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-base font-bold text-amber-400 mb-3">
-              Installer sur iPhone / iPad
-            </h3>
+            <h3 className="text-base font-bold text-amber-400 mb-3">Installer sur iPhone / iPad</h3>
             <p className="text-xs text-slate-300 leading-relaxed mb-4">
               Pour ajouter Earnings Radar sur votre écran d'accueil sans passer par l'App Store :
             </p>

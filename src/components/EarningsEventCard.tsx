@@ -67,12 +67,18 @@ export const EarningsEventCard: React.FC<EarningsEventCardProps> = ({ event, onC
         <div className="flex items-center gap-2">
           {event.epsEstimate !== undefined && (
             <span title="Bénéfice net par action estimé">
-              BPA: <strong className="text-slate-800">{formatEps(event.epsEstimate, event.currency)}</strong>
+              BPA:{' '}
+              <strong className="text-slate-800">
+                {formatEps(event.epsEstimate, event.currency)}
+              </strong>
             </span>
           )}
           {event.revenueEstimate !== undefined && (
             <span title="Chiffre d’affaires estimé">
-              CA: <strong className="text-slate-800">{formatRevenue(event.revenueEstimate, event.currency)}</strong>
+              CA:{' '}
+              <strong className="text-slate-800">
+                {formatRevenue(event.revenueEstimate, event.currency)}
+              </strong>
             </span>
           )}
         </div>

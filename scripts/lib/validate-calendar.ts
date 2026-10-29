@@ -35,7 +35,9 @@ export function validateCalendarFile(
   // Check 2: Minimum events threshold (configurable, default 1)
   const minThreshold = options.minEventsThreshold ?? 1;
   if (calendar.events.length > 0 && calendar.events.length < minThreshold) {
-    warnings.push(`Low event count: ${calendar.events.length} events (expected at least ${minThreshold}).`);
+    warnings.push(
+      `Low event count: ${calendar.events.length} events (expected at least ${minThreshold}).`
+    );
   }
 
   // Check 3: Sudden drop check against previous valid calendar
@@ -53,7 +55,9 @@ export function validateCalendarFile(
   const genTime = new Date(calendar.metadata.generatedAt).getTime();
   const now = Date.now();
   if (genTime > now + 86400000) {
-    errors.push(`Anomaly: generatedAt (${calendar.metadata.generatedAt}) is over 24h into the future.`);
+    errors.push(
+      `Anomaly: generatedAt (${calendar.metadata.generatedAt}) is over 24h into the future.`
+    );
   }
 
   return {

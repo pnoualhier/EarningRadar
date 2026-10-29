@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeEvent, detectMarket, normalizeSession, parseNumberSafely } from '../../scripts/lib/normalize-event';
+import {
+  normalizeEvent,
+  detectMarket,
+  normalizeSession,
+  parseNumberSafely,
+} from '../../scripts/lib/normalize-event';
 
 describe('normalize-event', () => {
   it('detects markets accurately based on symbols, exchanges and country', () => {

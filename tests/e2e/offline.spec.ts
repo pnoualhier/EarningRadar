@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Offline mode and resilience', () => {
-  test('retains cached calendar and displays offline indicator when network disconnects', async ({ page, context }) => {
+  test('retains cached calendar and displays offline indicator when network disconnects', async ({
+    page,
+    context,
+  }) => {
     // 1. Initial load while online
     await page.goto('/');
     await expect(page.getByRole('heading', { name: /Earnings/i })).toBeVisible();

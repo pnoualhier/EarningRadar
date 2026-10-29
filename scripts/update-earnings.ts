@@ -10,14 +10,23 @@ async function main() {
   console.log('--- [Earnings Radar Data Update Pipeline] ---');
 
   const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
+  const allowMissing =
+    process.argv.includes('--allow-missing-key') || process.argv.includes('--dry-run');
+
   if (!apiKey) {
-    console.warn(
-      '⚠️ ALPHA_VANTAGE_API_KEY is not defined in environment.\n' +
+    const errorMsg =
+      '❌ ALPHA_VANTAGE_API_KEY is not defined in environment variables.\n' +
+      'Data update halted to prevent publishing unverified or empty data.\n' +
       'Preserving existing valid data in data/calendar.json without modification.\n' +
-      'Please configure ALPHA_VANTAGE_API_KEY in repository secrets for production updates.'
-    );
+      'Configure ALPHA_VANTAGE_API_KEY in repository secrets or pass --dry-run for local offline simulation.';
+    console.error(errorMsg);
+
     if (!fs.existsSync(CALENDAR_PATH)) {
-      console.warn('No existing data/calendar.json found. Creating initial placeholder template.');
+      console.warn('⚠️ No existing data/calendar.json found.');
+    }
+
+    if (!allowMissing) {
+      process.exit(1);
     }
     return;
   }
@@ -38,13 +47,19 @@ async function main() {
       apiKey,
     });
 
+    if (events.length === 0) {
+      throw new Error(
+        'Empty response received from provider: 0 valid events normalized. Aborting publish to prevent calendar corruption.'
+      );
+    }
+
     const newCalendar: EarningsCalendar = {
       metadata: {
         schemaVersion: 1,
         generatedAt: new Date().toISOString(),
         lastSuccessfulFetchAt: new Date().toISOString(),
         provider: 'Alpha Vantage (Official API Feed)',
-        status: events.length > 0 ? 'success' : 'partial',
+        status: 'success',
         eventCount: events.length,
         markets: ['US', 'EU'],
         warnings,
@@ -56,7 +71,7 @@ async function main() {
     console.log(`✅ Update pipeline completed successfully with ${events.length} events.`);
   } catch (err: unknown) {
     const errMessage = err instanceof Error ? err.message : String(err);
-    // Sanitize any key
+    // Sanitize any potential key from error output
     const sanitized = apiKey ? errMessage.split(apiKey).join('[REDACTED_API_KEY]') : errMessage;
     console.error(`❌ Update pipeline failed: ${sanitized}`);
     console.error('Preserving last valid calendar version.');

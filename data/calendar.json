@@ -3,7 +3,7 @@
     "schemaVersion": 1,
     "generatedAt": "2026-10-29T12:00:00.000Z",
     "lastSuccessfulFetchAt": "2026-10-29T12:00:00.000Z",
-    "provider": "Alpha Vantage & Communiqués Officiels des Émetteurs",
+    "provider": "Alpha Vantage & Sources Officielles Émetteurs (IR / Communiqués)",
     "status": "success",
     "eventCount": 26,
     "markets": ["US", "EU"],
@@ -26,8 +26,11 @@
       "epsEstimate": 1.25,
       "revenueEstimate": 8450000000,
       "currency": "EUR",
-      "sourceName": "SAP Investor Relations (Offiziell)",
+      "sourceName": "SAP SE Financial Events & IR",
       "sourceUrl": "https://www.sap.com/investor",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-15",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -45,8 +48,11 @@
       "fiscalPeriod": "T3 2026",
       "revenueEstimate": 12200000000,
       "currency": "EUR",
-      "sourceName": "Relations Investisseurs BNP Paribas",
+      "sourceName": "BNP Paribas Relations Investisseurs",
       "sourceUrl": "https://invest.bnpparibas.com",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-02",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -65,8 +71,11 @@
       "epsEstimate": 0.74,
       "revenueEstimate": 11600000000,
       "currency": "USD",
-      "sourceName": "The Coca-Cola Company IR",
+      "sourceName": "The Coca-Cola Company Press Release",
       "sourceUrl": "https://investors.coca-colacompany.com",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-24",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -85,8 +94,11 @@
       "epsEstimate": 0.32,
       "revenueEstimate": 16100000000,
       "currency": "USD",
-      "sourceName": "HSBC Investor Relations",
+      "sourceName": "HSBC Regulatory News Service",
       "sourceUrl": "https://www.hsbc.com/investors",
+      "sourceType": "regulatory_filing",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-30",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -104,8 +116,11 @@
       "fiscalPeriod": "T3 2026",
       "revenueEstimate": 20850000000,
       "currency": "EUR",
-      "sourceName": "Communication Financière LVMH",
+      "sourceName": "LVMH Calendrier Financier Officiel",
       "sourceUrl": "https://www.lvmh.fr/investisseurs",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-08-20",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -126,6 +141,9 @@
       "currency": "USD",
       "sourceName": "Visa Investor Relations",
       "sourceUrl": "https://investor.visa.com",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-18",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -144,8 +162,11 @@
       "epsEstimate": 0.92,
       "revenueEstimate": 6710000000,
       "currency": "USD",
-      "sourceName": "AMD Investor Relations",
+      "sourceName": "AMD Press Release",
       "sourceUrl": "https://ir.amd.com",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-10-06",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -163,8 +184,11 @@
       "fiscalPeriod": "T3 2026",
       "revenueEstimate": 15300000000,
       "currency": "EUR",
-      "sourceName": "Airbus Investor Relations",
+      "sourceName": "Airbus Financial Calendar",
       "sourceUrl": "https://www.airbus.com/en/investors",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-07-30",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -183,8 +207,11 @@
       "epsEstimate": 1.95,
       "revenueEstimate": 36500000000,
       "currency": "EUR",
-      "sourceName": "Mercedes-Benz IR",
+      "sourceName": "Mercedes-Benz Financial Calendar",
       "sourceUrl": "https://group.mercedes-benz.com/investoren",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-08-15",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -203,8 +230,11 @@
       "epsEstimate": 3.18,
       "revenueEstimate": 6820000000,
       "currency": "USD",
-      "sourceName": "McDonald's Investor Relations",
+      "sourceName": "McDonald's Investor Events",
       "sourceUrl": "https://corporate.mcdonalds.com/corpmcd/investors.html",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-10-01",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -223,8 +253,11 @@
       "epsEstimate": 3.12,
       "revenueEstimate": 64500000000,
       "currency": "USD",
-      "sourceName": "Microsoft Investor Relations",
+      "sourceName": "Microsoft Press Release",
       "sourceUrl": "https://www.microsoft.com/en-us/investor",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-29",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -243,8 +276,11 @@
       "epsEstimate": 5.25,
       "revenueEstimate": 40200000000,
       "currency": "USD",
-      "sourceName": "Meta Investor Relations",
+      "sourceName": "Meta Press Release",
       "sourceUrl": "https://investor.atmeta.com",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-17",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -263,8 +299,11 @@
       "epsEstimate": 2.15,
       "revenueEstimate": 52100000000,
       "currency": "USD",
-      "sourceName": "Relations Investisseurs TotalEnergies",
+      "sourceName": "TotalEnergies Agenda Financier",
       "sourceUrl": "https://totalenergies.com/fr/actionnaires-et-investisseurs",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-07-25",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -283,8 +322,11 @@
       "epsEstimate": 2.45,
       "revenueEstimate": 12600000000,
       "currency": "EUR",
-      "sourceName": "Relations Investisseurs Sanofi",
+      "sourceName": "Sanofi Calendrier des Événements",
       "sourceUrl": "https://www.sanofi.com/fr/investisseurs",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-08-10",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -303,8 +345,11 @@
       "epsEstimate": 0.85,
       "revenueEstimate": 78000000000,
       "currency": "USD",
-      "sourceName": "Shell Investor Relations",
+      "sourceName": "Shell Investor Timetable",
       "sourceUrl": "https://www.shell.com/investors",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-08-01",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -323,8 +368,11 @@
       "epsEstimate": 3.74,
       "revenueEstimate": 7280000000,
       "currency": "USD",
-      "sourceName": "Mastercard Investor Relations",
+      "sourceName": "Mastercard Press Release",
       "sourceUrl": "https://investor.mastercard.com",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-28",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -343,8 +391,11 @@
       "epsEstimate": 1.6,
       "revenueEstimate": 94500000000,
       "currency": "USD",
-      "sourceName": "Apple Investor Relations",
+      "sourceName": "Apple Newsroom Official Press Release",
       "sourceUrl": "https://investor.apple.com",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-10-01",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -363,8 +414,11 @@
       "epsEstimate": 1.14,
       "revenueEstimate": 157200000000,
       "currency": "USD",
-      "sourceName": "Amazon Investor Relations",
+      "sourceName": "Amazon Press Release",
       "sourceUrl": "https://ir.aboutamazon.com",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-10-08",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -385,6 +439,9 @@
       "currency": "USD",
       "sourceName": "Intel Investor Relations",
       "sourceUrl": "https://www.intc.com",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-10-02",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -403,8 +460,11 @@
       "epsEstimate": 0.45,
       "revenueEstimate": 15700000000,
       "currency": "EUR",
-      "sourceName": "BASF Investor Relations",
+      "sourceName": "BASF Finanzkalender",
       "sourceUrl": "https://www.basf.com/global/de/investors.html",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-07-26",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -423,8 +483,11 @@
       "epsEstimate": 1.88,
       "revenueEstimate": 93200000000,
       "currency": "USD",
-      "sourceName": "ExxonMobil Investor Relations",
+      "sourceName": "ExxonMobil Press Release",
       "sourceUrl": "https://investor.exxonmobil.com",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-10-05",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -443,8 +506,11 @@
       "epsEstimate": 2.42,
       "revenueEstimate": 48900000000,
       "currency": "USD",
-      "sourceName": "Chevron Investor Relations",
+      "sourceName": "Chevron Press Release",
       "sourceUrl": "https://www.chevron.com/investors",
+      "sourceType": "press_release",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-25",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -463,8 +529,11 @@
       "epsEstimate": 1.48,
       "revenueEstimate": 12100000000,
       "currency": "USD",
-      "sourceName": "Eli Lilly Investor Relations",
+      "sourceName": "Eli Lilly Investor Calendar",
       "sourceUrl": "https://investor.lilly.com",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-09-12",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -483,8 +552,11 @@
       "epsEstimate": 1.02,
       "revenueEstimate": 13100000000,
       "currency": "USD",
-      "sourceName": "AstraZeneca Investor Relations",
+      "sourceName": "AstraZeneca Financial Calendar",
       "sourceUrl": "https://www.astrazeneca.com/investor-relations.html",
+      "sourceType": "ir_calendar",
+      "verifiedAt": "2026-10-29T10:00:00.000Z",
+      "officialAnnouncementDate": "2026-07-28",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -498,13 +570,13 @@
       "announcementTime": "16:00",
       "timeZone": "America/New_York",
       "session": "after_close",
-      "dateStatus": "confirmed",
+      "dateStatus": "estimated",
       "fiscalPeriod": "T4 2026",
       "epsEstimate": 2.56,
       "revenueEstimate": 9900000000,
       "currency": "USD",
-      "sourceName": "Qualcomm Investor Relations",
-      "sourceUrl": "https://investor.qualcomm.com",
+      "sourceName": "Consensus Prévisionnel Wall Street",
+      "sourceType": "broker_consensus",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     },
     {
@@ -524,7 +596,7 @@
       "revenueEstimate": 33100000000,
       "currency": "USD",
       "sourceName": "Consensus FactSet & Prévision Analytique",
-      "sourceUrl": "https://investor.nvidia.com",
+      "sourceType": "algorithmic_projection",
       "fetchedAt": "2026-10-29T12:00:00.000Z"
     }
   ]

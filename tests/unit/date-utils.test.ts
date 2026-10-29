@@ -29,13 +29,7 @@ describe('date-utils', () => {
 
   it('generates the 5 workdays (Monday through Friday)', () => {
     const days = getWorkdaysOfWeek('2026-10-26');
-    expect(days).toEqual([
-      '2026-10-26',
-      '2026-10-27',
-      '2026-10-28',
-      '2026-10-29',
-      '2026-10-30',
-    ]);
+    expect(days).toEqual(['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30']);
   });
 
   it('shifts days and weeks accurately across month boundaries', () => {

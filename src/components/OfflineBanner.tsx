@@ -14,7 +14,8 @@ export const OfflineBanner: React.FC = () => {
     >
       <WifiOff className="w-4 h-4" />
       <span>
-        Mode hors ligne actif — Vous consultez la dernière version sauvegardée du calendrier financier.
+        Mode hors ligne actif — Vous consultez la dernière version sauvegardée du calendrier
+        financier.
       </span>
     </div>
   );

@@ -1,15 +1,16 @@
-export type Market = "US" | "EU";
+export type Market = 'US' | 'EU';
 
-export type DateStatus =
-  | "confirmed"
-  | "estimated"
-  | "unverified";
+export type DateStatus = 'confirmed' | 'estimated' | 'unverified';
 
-export type EarningsSession =
-  | "before_open"
-  | "after_close"
-  | "during_session"
-  | "unknown";
+export type EarningsSession = 'before_open' | 'after_close' | 'during_session' | 'unknown';
+
+export type SourceType =
+  | 'press_release'
+  | 'ir_calendar'
+  | 'regulatory_filing'
+  | 'broker_consensus'
+  | 'algorithmic_projection'
+  | 'unverified';
 
 export interface EarningsEvent {
   id: string;
@@ -40,7 +41,10 @@ export interface EarningsEvent {
 
   sourceName: string;
   sourceUrl?: string;
+  sourceType?: SourceType;
   sourceUpdatedAt?: string;
+  verifiedAt?: string;
+  officialAnnouncementDate?: string;
 
   fetchedAt: string;
 }
@@ -53,11 +57,7 @@ export interface CalendarMetadata {
 
   provider: string;
 
-  status:
-    | "success"
-    | "partial"
-    | "stale"
-    | "unavailable";
+  status: 'success' | 'partial' | 'stale' | 'unavailable';
 
   eventCount: number;
 
@@ -72,10 +72,10 @@ export interface EarningsCalendar {
 }
 
 export interface CalendarFilterOptions {
-  market: "ALL" | Market;
+  market: 'ALL' | Market;
   startDate?: string;
   endDate?: string;
-  session?: EarningsSession | "all";
-  dateStatus?: DateStatus | "all";
+  session?: EarningsSession | 'all';
+  dateStatus?: DateStatus | 'all';
   searchQuery?: string;
 }

@@ -37,7 +37,11 @@ export const MarketSelector: React.FC<MarketSelectorProps> = ({
                 : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
             }`}
           >
-            {opt.flag && <span className="text-sm" aria-hidden="true">{opt.flag}</span>}
+            {opt.flag && (
+              <span className="text-sm" aria-hidden="true">
+                {opt.flag}
+              </span>
+            )}
             <span>{opt.label}</span>
           </button>
         );

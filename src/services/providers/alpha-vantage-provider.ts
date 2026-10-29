@@ -55,8 +55,13 @@ export class AlphaVantageProvider implements EarningsProvider {
         const text = await response.text();
 
         // Alpha Vantage returns rate-limit messages inside text body even on HTTP 200
-        if (text.includes('Our standard API call frequency is') || text.includes('Thank you for using Alpha Vantage')) {
-          throw new Error('Alpha Vantage rate limit / quota exceeded (25 calls/day max on free tier).');
+        if (
+          text.includes('Our standard API call frequency is') ||
+          text.includes('Thank you for using Alpha Vantage')
+        ) {
+          throw new Error(
+            'Alpha Vantage rate limit / quota exceeded (25 calls/day max on free tier).'
+          );
         }
 
         if (text.includes('Error Message') || text.includes('Invalid API call')) {
@@ -116,7 +121,8 @@ export class AlphaVantageProvider implements EarningsProvider {
         symbol,
         name: nameIdx !== -1 ? cols[nameIdx]?.trim() : symbol,
         reportDate,
-        fiscalDateEnding: fiscalDateEndingIdx !== -1 ? cols[fiscalDateEndingIdx]?.trim() : undefined,
+        fiscalDateEnding:
+          fiscalDateEndingIdx !== -1 ? cols[fiscalDateEndingIdx]?.trim() : undefined,
         estimate: estimateIdx !== -1 ? cols[estimateIdx]?.trim() : undefined,
         currency: currencyIdx !== -1 ? cols[currencyIdx]?.trim() : 'USD',
         sourceName: 'Alpha Vantage (Official Feed)',

@@ -2,10 +2,7 @@
  * Formatting helpers for financial metrics and localization.
  */
 
-export function formatCurrencyAmount(
-  amount: number | undefined,
-  currency: string = 'USD'
-): string {
+export function formatCurrencyAmount(amount: number | undefined, currency: string = 'USD'): string {
   if (amount === undefined || !Number.isFinite(amount)) return '—';
 
   return new Intl.NumberFormat('fr-FR', {
@@ -16,10 +13,7 @@ export function formatCurrencyAmount(
   }).format(amount);
 }
 
-export function formatRevenue(
-  amount: number | undefined,
-  currency: string = 'USD'
-): string {
+export function formatRevenue(amount: number | undefined, currency: string = 'USD'): string {
   if (amount === undefined || !Number.isFinite(amount)) return '—';
 
   const symbolMap: Record<string, string> = {
@@ -47,10 +41,7 @@ export function formatRevenue(
   return formatCurrencyAmount(amount, currency);
 }
 
-export function formatEps(
-  amount: number | undefined,
-  currency: string = 'USD'
-): string {
+export function formatEps(amount: number | undefined, currency: string = 'USD'): string {
   if (amount === undefined || !Number.isFinite(amount)) return '—';
 
   const symbolMap: Record<string, string> = {

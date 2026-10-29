@@ -24,7 +24,9 @@ export const DayColumn: React.FC<DayColumnProps> = ({
   return (
     <div className={`day-column ${isToday ? 'day-column-today bg-amber-50/20' : ''}`}>
       {/* Sticky header */}
-      <div className={`day-column-header p-3 flex items-center justify-between ${isToday ? 'bg-amber-100/50' : ''}`}>
+      <div
+        className={`day-column-header p-3 flex items-center justify-between ${isToday ? 'bg-amber-100/50' : ''}`}
+      >
         <div className="flex items-baseline gap-2">
           <span className="font-bold text-sm text-slate-800">{weekday}</span>
           <span className="text-xs text-slate-500 font-medium">

@@ -49,10 +49,7 @@ export const AppNavigation: React.FC<AppNavigationProps> = ({
         />
 
         <div className="flex flex-wrap items-center gap-3">
-          <MarketSelector
-            selectedMarket={selectedMarket}
-            onSelectMarket={onSelectMarket}
-          />
+          <MarketSelector selectedMarket={selectedMarket} onSelectMarket={onSelectMarket} />
           <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300">
             {totalFilteredCount} {totalFilteredCount > 1 ? 'entreprises' : 'entreprise'}
           </span>

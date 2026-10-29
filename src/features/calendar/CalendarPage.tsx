@@ -138,10 +138,7 @@ export const CalendarPage: React.FC = () => {
         ) : error && !calendar ? (
           <ErrorState message={error} onRetry={refresh} />
         ) : weekEvents.length === 0 ? (
-          <EmptyState
-            searchQuery={searchQuery}
-            onResetFilters={handleResetFilters}
-          />
+          <EmptyState searchQuery={searchQuery} onResetFilters={handleResetFilters} />
         ) : (
           <>
             {/* Desktop 5-day columns view (hidden on screens < 1024px) */}

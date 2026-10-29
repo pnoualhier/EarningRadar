@@ -19,28 +19,29 @@ export const MARKET_LABELS: Record<string, string> = {
   EU: 'Europe (CAC 40, DAX, FTSE...)',
 };
 
-export const SESSION_LABELS: Record<string, { label: string; short: string; description: string }> = {
-  before_open: {
-    label: 'Avant ouverture',
-    short: 'BMO',
-    description: 'Publication avant le début des cotations',
-  },
-  during_session: {
-    label: 'Pendant la séance',
-    short: 'Pendant',
-    description: 'Publication en cours de séance boursière',
-  },
-  after_close: {
-    label: 'Après clôture',
-    short: 'AMC',
-    description: 'Publication après la fin de la séance',
-  },
-  unknown: {
-    label: 'Horaire inconnu',
-    short: 'Inconnu',
-    description: 'Horaire précis ou session non précisée',
-  },
-};
+export const SESSION_LABELS: Record<string, { label: string; short: string; description: string }> =
+  {
+    before_open: {
+      label: 'Avant ouverture',
+      short: 'BMO',
+      description: 'Publication avant le début des cotations',
+    },
+    during_session: {
+      label: 'Pendant la séance',
+      short: 'Pendant',
+      description: 'Publication en cours de séance boursière',
+    },
+    after_close: {
+      label: 'Après clôture',
+      short: 'AMC',
+      description: 'Publication après la fin de la séance',
+    },
+    unknown: {
+      label: 'Horaire inconnu',
+      short: 'Inconnu',
+      description: 'Horaire précis ou session non précisée',
+    },
+  };
 
 export const STATUS_LABELS: Record<string, { label: string; description: string }> = {
   confirmed: {

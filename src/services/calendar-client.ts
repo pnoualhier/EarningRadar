@@ -81,7 +81,8 @@ export class CalendarClient {
       }
 
       throw new Error(
-        `Impossible de charger le calendrier financier (${errMsg}) et aucune version en cache disponible.`
+        `Impossible de charger le calendrier financier (${errMsg}) et aucune version en cache disponible.`,
+        { cause: err }
       );
     }
   }

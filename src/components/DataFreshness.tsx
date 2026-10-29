@@ -49,9 +49,7 @@ export const DataFreshness: React.FC<DataFreshnessProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-[11px] text-slate-500">
-          {metadata.eventCount} événements
-        </span>
+        <span className="text-[11px] text-slate-500">{metadata.eventCount} événements</span>
         <button
           type="button"
           onClick={onRefresh}

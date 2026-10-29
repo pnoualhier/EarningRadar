@@ -14,7 +14,14 @@ export const AppHeader: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/80 flex items-center justify-center relative shadow-inner">
             <svg className="w-6 h-6" viewBox="0 0 64 64" fill="none">
               <circle cx="32" cy="32" r="24" stroke="#475569" strokeWidth="2" />
-              <circle cx="32" cy="32" r="14" stroke="#64748b" strokeWidth="1.5" strokeDasharray="3 3" />
+              <circle
+                cx="32"
+                cy="32"
+                r="14"
+                stroke="#64748b"
+                strokeWidth="1.5"
+                strokeDasharray="3 3"
+              />
               <circle cx="32" cy="32" r="4" fill="#F59E0B" />
               <path d="M32 32 L48 18" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
               <circle cx="44" cy="22" r="2.5" fill="#38BDF8" />
@@ -41,9 +48,7 @@ export const AppHeader: React.FC = () => {
         <div className="flex flex-wrap items-center gap-3">
           <div className="text-right hidden sm:block">
             <span className="text-[11px] text-slate-400 block">Date de référence marché</span>
-            <span className="text-xs font-semibold text-slate-200 capitalize">
-              {fullDate}
-            </span>
+            <span className="text-xs font-semibold text-slate-200 capitalize">{fullDate}</span>
           </div>
 
           <PWAInstallButton />

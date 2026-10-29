@@ -1,5 +1,10 @@
-import type { EarningsEvent, Market, EarningsSession, DateStatus } from '../../src/types/earnings';
-import { classifyDateStatus } from './classify-date-status';
+import type {
+  EarningsEvent,
+  Market,
+  EarningsSession,
+  SourceType,
+} from '../../src/types/earnings';
+import { classifyDateStatus, inferSourceType } from './classify-date-status';
 
 export interface RawEarningsRecord {
   symbol: string;
@@ -15,24 +20,69 @@ export interface RawEarningsRecord {
   market?: string;
   sourceName?: string;
   sourceUrl?: string;
+  sourceType?: SourceType;
   isConfirmed?: boolean;
   statusText?: string;
+  verifiedAt?: string;
+  officialAnnouncementDate?: string;
 }
 
-export function detectMarket(symbol: string, exchange?: string, country?: string): Market {
+/**
+ * Accurately detects whether a security is listed on US or European markets.
+ * Never blindly assumes US without evidence (exchange, country, or ticker pattern).
+ */
+export function detectMarket(
+  symbol: string,
+  exchange?: string,
+  country?: string
+): Market | null {
   if (exchange) {
     const ex = exchange.toUpperCase();
-    if (ex.includes('PARIS') || ex.includes('XETRA') || ex.includes('LSE') || ex.includes('SIX') || ex.includes('EURONEXT') || ex.includes('EPA')) {
+    if (
+      ex.includes('PARIS') ||
+      ex.includes('XETRA') ||
+      ex.includes('LSE') ||
+      ex.includes('SIX') ||
+      ex.includes('EURONEXT') ||
+      ex.includes('EPA') ||
+      ex.includes('FRA') ||
+      ex.includes('SWX')
+    ) {
       return 'EU';
     }
-    if (ex.includes('NYSE') || ex.includes('NASDAQ') || ex.includes('AMEX')) {
+    if (
+      ex.includes('NYSE') ||
+      ex.includes('NASDAQ') ||
+      ex.includes('AMEX') ||
+      ex.includes('BATS') ||
+      ex.includes('ARCA')
+    ) {
       return 'US';
     }
   }
 
   if (country) {
     const c = country.toUpperCase();
-    if (['FR', 'FRANCE', 'DE', 'GERMANY', 'GB', 'UK', 'CH', 'SWITZERLAND', 'NL', 'NETHERLANDS'].includes(c)) {
+    if (
+      [
+        'FR',
+        'FRANCE',
+        'DE',
+        'GERMANY',
+        'GB',
+        'UK',
+        'CH',
+        'SWITZERLAND',
+        'NL',
+        'NETHERLANDS',
+        'BE',
+        'BELGIUM',
+        'ES',
+        'SPAIN',
+        'IT',
+        'ITALY',
+      ].includes(c)
+    ) {
       return 'EU';
     }
     if (['US', 'USA', 'UNITED STATES'].includes(c)) {
@@ -45,18 +95,39 @@ export function detectMarket(symbol: string, exchange?: string, country?: string
     return 'EU';
   }
 
-  return 'US';
+  // US standard tickers (1-5 uppercase characters without suffix)
+  if (/^[A-Z]{1,5}$/.test(symbol)) {
+    return 'US';
+  }
+
+  return null;
 }
 
 export function normalizeSession(sessionStr?: string, timeStr?: string): EarningsSession {
   const norm = (sessionStr || '').toLowerCase().trim();
-  if (norm.includes('bmo') || norm.includes('before') || norm.includes('pre') || norm.includes('avant')) {
+  if (
+    norm.includes('bmo') ||
+    norm.includes('before') ||
+    norm.includes('pre') ||
+    norm.includes('avant')
+  ) {
     return 'before_open';
   }
-  if (norm.includes('amc') || norm.includes('after') || norm.includes('post') || norm.includes('cloture') || norm.includes('après')) {
+  if (
+    norm.includes('amc') ||
+    norm.includes('after') ||
+    norm.includes('post') ||
+    norm.includes('cloture') ||
+    norm.includes('après')
+  ) {
     return 'after_close';
   }
-  if (norm.includes('during') || norm.includes('intraday') || norm.includes('séance') || norm.includes('seance')) {
+  if (
+    norm.includes('during') ||
+    norm.includes('intraday') ||
+    norm.includes('séance') ||
+    norm.includes('seance')
+  ) {
     return 'during_session';
   }
 
@@ -89,20 +160,36 @@ export function normalizeEvent(
 
   const cleanSymbol = raw.symbol.trim().toUpperCase();
   const cleanDate = raw.reportDate.trim().slice(0, 10);
-  
+
   if (!/^\d{4}-\d{2}-\d{2}$/.test(cleanDate)) {
     return null;
   }
 
-  const market = (raw.market === 'EU' || raw.market === 'US') 
-    ? raw.market 
-    : detectMarket(cleanSymbol, raw.exchange, raw.country);
+  const market =
+    raw.market === 'EU' || raw.market === 'US'
+      ? raw.market
+      : detectMarket(cleanSymbol, raw.exchange, raw.country);
+
+  // If no market could be identified with evidence, reject record
+  if (!market) {
+    return null;
+  }
 
   const session = normalizeSession(raw.session, raw.time);
   const dateStatus = classifyDateStatus({
     isConfirmedByCompany: raw.isConfirmed,
     statusText: raw.statusText,
+    sourceUrl: raw.sourceUrl,
+    sourceConfidence: raw.sourceType,
   });
+
+  const sourceType =
+    raw.sourceType ||
+    inferSourceType({
+      isConfirmedByCompany: raw.isConfirmed,
+      statusText: raw.statusText,
+      sourceUrl: raw.sourceUrl,
+    });
 
   // Construct stable, deterministic ID
   const id = `${market}_${cleanSymbol}_${cleanDate}_${session}`.replace(/[^A-Za-z0-9_-]/g, '_');
@@ -123,9 +210,12 @@ export function normalizeEvent(
     dateStatus,
     fiscalPeriod: raw.fiscalDateEnding?.trim(),
     epsEstimate,
-    currency: raw.currency ? raw.currency.toUpperCase() : (market === 'US' ? 'USD' : 'EUR'),
+    currency: raw.currency ? raw.currency.toUpperCase() : market === 'US' ? 'USD' : 'EUR',
     sourceName: raw.sourceName || 'Alpha Vantage / Financial Feed',
     sourceUrl: raw.sourceUrl,
+    sourceType,
+    verifiedAt: raw.verifiedAt,
+    officialAnnouncementDate: raw.officialAnnouncementDate,
     fetchedAt,
   };
 }

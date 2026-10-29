@@ -42,7 +42,9 @@ export function publishCalendarAtomically(newCalendar: EarningsCalendar): void {
 
   // 3. Atomically replace target file
   fs.renameSync(TMP_FILE, TARGET_FILE);
-  console.log(`[Publish] Atomically published ${newCalendar.events.length} events to ${TARGET_FILE}`);
+  console.log(
+    `[Publish] Atomically published ${newCalendar.events.length} events to ${TARGET_FILE}`
+  );
 }
 
 // CLI entrypoint if executed directly

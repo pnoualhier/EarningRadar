@@ -40,7 +40,10 @@ export function mergeEvents(events: EarningsEvent[]): MergeResult {
         ...existing,
         ...event,
         // Preserve richer details if new event lacks them
-        companyName: event.companyName.length > existing.companyName.length ? event.companyName : existing.companyName,
+        companyName:
+          event.companyName.length > existing.companyName.length
+            ? event.companyName
+            : existing.companyName,
         epsEstimate: event.epsEstimate ?? existing.epsEstimate,
         epsActual: event.epsActual ?? existing.epsActual,
         revenueEstimate: event.revenueEstimate ?? existing.revenueEstimate,

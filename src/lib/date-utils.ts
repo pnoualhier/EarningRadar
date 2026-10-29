@@ -10,11 +10,7 @@ export function isValidDateString(dateStr: string): boolean {
   }
   const [y, m, d] = dateStr.split('-').map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d));
-  return (
-    dt.getUTCFullYear() === y &&
-    dt.getUTCMonth() === m - 1 &&
-    dt.getUTCDate() === d
-  );
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
 }
 
 /**
@@ -116,7 +112,7 @@ export function formatDayHeader(dateStr: string): {
   }
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(Date.UTC(y, m - 1, d));
-  
+
   const weekday = new Intl.DateTimeFormat('fr-FR', {
     weekday: 'short',
     timeZone: 'UTC',
@@ -172,10 +168,7 @@ export function formatWeekRange(mondayStr: string): string {
 /**
  * Formats announcement time (HH:mm) if present with timezone abbreviation.
  */
-export function formatAnnouncementTime(
-  time?: string,
-  timeZone?: string
-): string | null {
+export function formatAnnouncementTime(time?: string, timeZone?: string): string | null {
   if (!time) return null;
   if (!timeZone) return `${time}`;
   return `${time} (${timeZone.split('/').pop()?.replace('_', ' ') || timeZone})`;

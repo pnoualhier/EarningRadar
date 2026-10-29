@@ -10,7 +10,7 @@ interface StatusBadgeProps {
 export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'sm' }) => {
   const info = STATUS_LABELS[status] || { label: status, description: '' };
 
-  let colorClasses = '';
+  let colorClasses: string;
   switch (status) {
     case 'confirmed':
       colorClasses = 'bg-emerald-50 text-emerald-800 border-emerald-200';
